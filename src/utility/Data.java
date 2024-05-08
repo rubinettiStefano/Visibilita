@@ -1,5 +1,7 @@
 package utility;
 
+import java.util.ArrayList;
+
 /**
  * Una Data è un giorno nel calendario, definito dal giorno del mese, mese e anno
  * FORMATO EU       : dd/MM/yyyy          27/08/1995
@@ -9,6 +11,81 @@ package utility;
  */
 public class Data 
 {
+    //L'OGGETTO CONOSCE LA CLASSE
+    //LA CLASSE NON CONOSCE I SUOI OGGETTI
+
+    //CON SCOPE DEFINIAMO l'APPARTENZA DI UN MEMBRO DELLA CLASSE
+
+    //SCOPE DI CLASSE  (STATIC)
+    //Proprietà e Metodi che sono DELLA CLASSE, non dei suoi OGGETTI
+    //è uguale per tutti gli oggetti della classe
+    private final static  int[] GIORNIPERMESE = new int[]{0,31,28,31,30,31,30,31,31,30,31,30,31};
+    //final davanti ad una proprietà (static o no), indica che è una COSTANTE, che non può essere modificata
+
+
+    //metodo static
+    //metodo che non deve lavorare con l'oggetto
+
+    /**
+     * Entra una String che rappresenta una Data e una String che rappresenta il suo formato
+     * Esce una LISTA con 3 numeri, il primo è il giorno, il secondo il mese, il terzo l'anno
+     * Se il formato non è uno tra EU,US,DB,DB-US restituisco una lista con 3 -1
+     */
+    public static ArrayList<Integer> estraiValoriSingoli(String dataTestuale,String formatoDiQuellaData)
+    {
+
+        ArrayList<Integer> res = new ArrayList<>();
+        switch (formatoDiQuellaData.toUpperCase()) 
+        {
+            case "EU": //dd/MM/yyyy
+                res = splittaEu(dataTestuale);
+            break;
+            case "US"://MM/dd/yyyy
+            {
+                String[] parti = dataTestuale.split("/");
+                res.add(Integer.parseInt(parti[1]));//giorno 
+                res.add(Integer.parseInt(parti[0]));//mese
+                res.add(Integer.parseInt(parti[2]));//anno 
+            }
+            break;
+            case "DB":
+            {
+                String[] parti = dataTestuale.split("-");
+                res.add(Integer.parseInt(parti[2]));//giorno 
+                res.add(Integer.parseInt(parti[1]));//mese
+                res.add(Integer.parseInt(parti[0]));//anno 
+            }
+            break;
+            case "DB-US":
+            {
+                String[] parti = dataTestuale.split("-");
+                res.add(Integer.parseInt(parti[1]));//giorno 
+                res.add(Integer.parseInt(parti[2]));//mese
+                res.add(Integer.parseInt(parti[0]));//anno 
+            }    
+            break;
+            default: //NON HA SENSO, gli do un risultato che possa farglielo capire
+                res.add(-1);
+                res.add(-1);
+                res.add(-1);
+        }
+
+        return res;
+    }
+
+    private static ArrayList<Integer> splittaEu(String data)
+    {
+        ArrayList<Integer> res = new ArrayList<>();
+        String[] parti = data.split("/");
+        res.add(Integer.parseInt(parti[0]));//giorno 
+        res.add(Integer.parseInt(parti[1]));//mese
+        res.add(Integer.parseInt(parti[2]));//anno 
+
+        return res;
+    }
+
+    //SCOPE DI OGGETTO
+    //Proprietà e Metodi che sono degli oggetti (delle istanze) di quella classe
 
     //PROPRIETÀ OGGETTO Data
     private Integer giorno,mese,anno;
@@ -67,6 +144,8 @@ public class Data
 
     private boolean giornoValido()
     {
+        int igiorniDiGennaio = GIORNIPERMESE[1];
+
         return giorno>=1 && giorno<=31;
     }
 
@@ -118,6 +197,16 @@ public class Data
 
         // return res;
 
-        return  (giorno<10 ? "0"+giorno : giorno+"") + "/" + (mese<10 ? "0"+mese : mese+"") + "/" + anno;
+        // return  (giorno<10 ? "0"+giorno : giorno+"") + "/" + (mese<10 ? "0"+mese : mese+"") + "/" + anno;
+        String giornoBonificato = giorno<10       ?      "0"+giorno          :       giorno+""  ;
+        String meseBonificato = mese<10       ?      "0"+mese          :       mese+""  ;
+
+        return  formato.equals("US")                            ? 
+                    meseBonificato+"/"+giornoBonificato+"/"+anno         :
+                formato.equals("DB")                            ?
+                    anno+"-"+meseBonificato+"-"+giornoBonificato         :
+                formato.equals("DB-US")                         ?
+                    anno+"-"+giornoBonificato+"-"+meseBonificato         :
+                giornoBonificato +"/"+meseBonificato+"/"+anno            ;
     }
 }
